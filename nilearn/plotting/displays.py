@@ -787,7 +787,7 @@ class BaseSlicer(object):
         bounding_box = (xmin_, xmax_), (ymin_, ymax_), (zmin_, zmax_)
         ims = []
         to_iterate_over = zip(self.axes.values(), data_2d_list)
-        ##Here the images get added one by one 
+        ##TIna Here the images get added one by one 
         for display_ax, data_2d in to_iterate_over:
             if data_2d is not None:
                 # If data_2d is completely masked, then there is nothing to
@@ -1036,7 +1036,7 @@ class BaseSlicer(object):
 # class OrthoSlicer
 ###############################################################################
 
-class OrthoSlicer(BaseSlicer):
+class OrthoSlicer2(BaseSlicer):
     """ ##Aim organize into same view as MRicroGL
 
     Attributes
@@ -1057,6 +1057,7 @@ class OrthoSlicer(BaseSlicer):
     _axes_class = CutAxes
     ##get a quadratic figure size
     _default_figsize = [2.0,6.0]
+    #_default_figsize = [4.0,12.0]
 
     @classmethod
     def find_cut_coords(self, img=None, threshold=None, cut_coords=None):
@@ -1104,13 +1105,13 @@ class OrthoSlicer(BaseSlicer):
             
             if (index == 0):
                 coord1 = x1 - x0
-                coord2 = 0.5 + y0
+                coord2 = 0.5 * (y1-y0) + y0
                 coord3 = 0.5 * (x1 - x0) + x0
                 coord4 = y1-y0
 
             if (index == 1):
                 coord1 = 0.5 * (x1 - x0) + x0
-                coord2 = 0.5 + y0
+                coord2 = 0.5 * (y1-y0) + y0
                 coord3 = x1 -x0
                 coord4 = y1-y0
 
@@ -1157,8 +1158,6 @@ class OrthoSlicer(BaseSlicer):
             Here we put the logic used to adjust the size of the axes.
         """
         print("now inside locator function")
-        print("direction:")
-        print(direction)
         print(axes)
         x0, y0, x1, y1 = self.rect
         print("rect")
@@ -1214,7 +1213,7 @@ class OrthoSlicer(BaseSlicer):
         print(unique_height_dict.values())
 
       
-        total_width = float(sum(unique_width_dict.values()))   ##maybe change so that only unique values will be considered?
+        total_width = float(sum(unique_width_dict.values()))   ##maybe change so that only unique values will be considered? Done, how general is this?????
         print("all width values")
         print(width_dict.values())
         print("total_width")
@@ -1254,26 +1253,75 @@ class OrthoSlicer(BaseSlicer):
         coord3_dict = dict()
         coord4_dict = dict()
 
-        for idx, ax in enumerate(direction_ax):
+        #for idx, ax in enumerate(direction_ax):
 
-            if (idx == 0):
-                coord1_dict[ax] = x0
-                coord2_dict[ax] = (y1-y0) - height_dict[ax]
-                coord3_dict[ax] = x0 + width_dict[ax]
-                coord4_dict[ax] = y1
+            #if (idx == 0):
+            #    coord1_dict[ax] = x0
+            #    coord2_dict[ax] = (y1-y0) - height_dict[ax]
+            #    coord3_dict[ax] = x0 + width_dict[ax]
+            #    coord4_dict[ax] = y1
 
-            if (idx == 1):
-                coord1_dict[ax] = (x1-x0) - width_dict[ax]
-                coord2_dict[ax] = (y1-y0) - height_dict[ax]
-                coord3_dict[ax] = x1
-                coord4_dict[ax] = y1
+            #if (idx == 1):
+            #    coord1_dict[ax] = (x1-x0) - width_dict[ax]
+            #    coord2_dict[ax] = (y1-y0) - height_dict[ax]
+            #    coord3_dict[ax] = x1
+            #    coord4_dict[ax] = y1
 
-            if (idx == 2):
-                coord1_dict[ax] = x0
-                coord2_dict[ax] = y0
-                coord3_dict[ax] = x0 + width_dict[ax]
-                coord4_dict[ax] = y0 + height_dict[ax]
+            #if (idx == 2):
+            #    coord1_dict[ax] = x0
+            #    coord2_dict[ax] = y0
+            #    coord3_dict[ax] = x0 + width_dict[ax]
+            #    coord4_dict[ax] = y0 + height_dict[ax]
 
+        print(self.axes)
+
+        #if 'y' in self.axes:
+        #    ax = self.axes['y'].ax
+        #    print(ax)
+        #    coord1_dict[ax] = x0
+        #    coord2_dict[ax] = (y1-y0) - height_dict[ax]
+        #    coord3_dict[ax] = x0 + width_dict[ax]
+        #    coord4_dict[ax] = y1
+
+        #if 'x' in self.axes:
+        #    ax = self.axes['x'].ax
+        #    print(ax)
+        #    coord1_dict[ax] = (x1-x0) - width_dict[ax]
+        #    coord2_dict[ax] = (y1-y0) - height_dict[ax]
+        #    coord3_dict[ax] = x1
+        #    coord4_dict[ax] = y1
+
+        #if 'z' in self.axes:
+        #    ax = self.axes['z'].ax
+        #    print(ax)
+        #    coord1_dict[ax] = x0
+        #    coord2_dict[ax] = y0
+        #    coord3_dict[ax] = x0 + width_dict[ax]
+        #    coord4_dict[ax] = y0 + height_dict[ax]
+
+        if 'y' in self.axes:
+            ax = self.axes['y'].ax
+            print(ax)
+            coord1_dict[ax] = x0
+            coord2_dict[ax] = (y1) - height_dict[ax]
+            coord3_dict[ax] = x0 + width_dict[ax]
+            coord4_dict[ax] = y1
+
+        if 'x' in self.axes:
+            ax = self.axes['x'].ax
+            print(ax)
+            coord1_dict[ax] = (x1) - width_dict[ax]
+            coord2_dict[ax] = (y1) - height_dict[ax]
+            coord3_dict[ax] = x1
+            coord4_dict[ax] = y1
+
+        if 'z' in self.axes:
+            ax = self.axes['z'].ax
+            print(ax)
+            coord1_dict[ax] = x0
+            coord2_dict[ax] = y0
+            coord3_dict[ax] = x0 + width_dict[ax]
+            coord4_dict[ax] = y0 + height_dict[ax]
 
 
         #for idx, ax in enumerate(direction_ax):
@@ -1302,6 +1350,7 @@ class OrthoSlicer(BaseSlicer):
         #                       [left_dict[axes] + width_dict[axes], y1]]))
         #return transforms.Bbox([[left_dict[axes], y0],
         #                       [left_dict[axes] + width_dict[axes], y1]])
+        print("Bounding Boxes per figure")
         print(transforms.Bbox([[coord1_dict[axes], coord2_dict[axes]],
                                [coord3_dict[axes],coord4_dict[axes]]]))
 
@@ -1366,7 +1415,7 @@ class OrthoSlicer(BaseSlicer):
 # class OrthoSlicer
 ###############################################################################
 
-class OrthoSlicer_save(BaseSlicer):
+class OrthoSlicer(BaseSlicer):
     """ A class to create 3 linked axes for plotting orthogonal
     cuts of 3D maps.
 
@@ -1684,6 +1733,7 @@ class YZSlicer(OrthoSlicer):
 
 
 SLICERS = dict(ortho=OrthoSlicer,
+               ortho2= OrthoSlicer2,
                xz=XZSlicer,
                yz=YZSlicer,
                yx=YXSlicer,
