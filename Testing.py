@@ -24,6 +24,7 @@ img_data = img.get_fdata()
 
 #plot_img(img,cut_coords= (4,4,4),black_bg=False,display_mode = 'ortho2')
 #plot_stat_map(img,display_mode = 'ortho2')
+plot_anat(display_mode='ortho2')
 h = stat("C:/Users/tinas/Desktop/Sync/Rec/abi_nii overlay/energy.nii.gz")
 print("fig done")
 #plot.show()
