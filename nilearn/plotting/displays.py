@@ -587,7 +587,6 @@ class BaseSlicer(object):
 
             if leave_space:
                 figsize[0] += 3.4
-            ###Tina_First time plot appears
             figure = plt.figure(figure, figsize=figsize,
                                 facecolor=facecolor)
         if isinstance(axes, plt.Axes):
@@ -787,7 +786,6 @@ class BaseSlicer(object):
         bounding_box = (xmin_, xmax_), (ymin_, ymax_), (zmin_, zmax_)
         ims = []
         to_iterate_over = zip(self.axes.values(), data_2d_list)
-        ##TIna Here the images get added one by one 
         for display_ax, data_2d in to_iterate_over:
             if data_2d is not None:
                 # If data_2d is completely masked, then there is nothing to

@@ -5,6 +5,9 @@ See http://nilearn.github.io/manipulating_images/input_output.html
 Only matplotlib is required.
 """
 
+print("now i can change stuff :)")
+
+
 # Author: Gael Varoquaux, Chris Filo Gorgolewski
 # License: BSD
 
