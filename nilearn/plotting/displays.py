@@ -1053,9 +1053,7 @@ class OrthoSlicer2(BaseSlicer):
     """
     _cut_displayed = 'yxz'
     _axes_class = CutAxes
-    ##get a quadratic figure size
     _default_figsize = [2.0,6.0]
-    #_default_figsize = [4.0,12.0]
 
     @classmethod
     def find_cut_coords(self, img=None, threshold=None, cut_coords=None):
@@ -1079,28 +1077,9 @@ class OrthoSlicer2(BaseSlicer):
         facecolor = 'k' if self._black_bg else 'w'
         # Create our axes:
         self.axes = dict()
-        ##
         counter = 1
         for index, direction in enumerate(self._cut_displayed):
-
-            #index is simply 1,2,3
-            fh = self.frame_axes.get_figure()
-            print("index")
-            print(index)
-            ##ori
-            #ax = fh.add_axes([0.3 * index * (x1 - x0) + x0, y0,
-            #                  .3 * (x1 - x0), y1 - y0], aspect='equal')
-            #print([0.3 * index * (x1 - x0) + x0, y0,.3 * (x1 - x0), y1 - y0])
-
-            ##cahnged
-            ##previous coords
-            coord1 = 0.3 * index * (x1 - x0) + x0
-            coord2 = y0
-            coord3 = 0.3 * (x1 - x0)
-            coord4 = y1 - y0
-
-            ##changed
-            
+            fh = self.frame_axes.get_figure()           
             if (index == 0):
                 coord1 = x1 - x0
                 coord2 = 0.5 * (y1-y0) + y0
@@ -1119,12 +1098,8 @@ class OrthoSlicer2(BaseSlicer):
                 coord3 = 0.5 * (x1 - x0) + x0
                 coord4 = 0.5 * (y1-y0) + y0
 
-
             ax = fh.add_axes([coord1,coord2,coord3,coord4], aspect='equal')
-            print([coord1,coord2,coord3,coord4])
 
-            ##probably sufficient if I change the _init_axes
-            ##Nope!!!
             if LooseVersion(matplotlib.__version__) >= LooseVersion("1.6"):
                 ax.set_facecolor(facecolor)
             else:
@@ -1135,7 +1110,6 @@ class OrthoSlicer2(BaseSlicer):
                 sorted(self._cut_displayed).index(direction)]
             display_ax = self._axes_class(ax, direction, coord, **kwargs)
             self.axes[direction] = display_ax
-            print("once")
             ax.set_axes_locator(self._locator)
 
         if self._black_bg:
@@ -1155,11 +1129,8 @@ class OrthoSlicer2(BaseSlicer):
         """ The locator function used by matplotlib to position axes.
             Here we put the logic used to adjust the size of the axes.
         """
-        print("now inside locator function")
-        print(axes)
+
         x0, y0, x1, y1 = self.rect
-        print("rect")
-        print(x0, y0, x1, y1)
         width_dict = dict()
         ##Now needs to be adjustable in both width and height, so add heigth
         height_dict = dict()
@@ -1187,119 +1158,41 @@ class OrthoSlicer2(BaseSlicer):
             xmin, xmax, ymin, ymax = bounds
             width_dict[display_ax.ax] = (xmax - xmin)
             height_dict[display_ax.ax] = (ymax - ymin)
-        print("minmax")
-        print(xmin, xmax, ymin, ymax)
 
         ##Read out unique values
-        print("unique")
-        print(width_dict.values())
-
         unique_width_dict = {}
 
         for key,value in width_dict.items():
             if value not in unique_width_dict.values():
                 unique_width_dict[key] = value
 
-        print(unique_width_dict.values())
-
         unique_height_dict = {}
 
         for key,value in height_dict.items():
             if value not in unique_height_dict.values():
                 unique_height_dict[key] = value
+    
+        total_width = float(sum(unique_width_dict.values()))  
 
-        print(unique_height_dict.values())
-
-      
-        total_width = float(sum(unique_width_dict.values()))   ##maybe change so that only unique values will be considered? Done, how general is this?????
-        print("all width values")
-        print(width_dict.values())
-        print("total_width")
-        print(total_width)  #I assume widht of all 3 figures combined????
-        ##How do I figure out which axes I am in?????  (idx further down seems to do it)
         for ax, width in width_dict.items():
-            print(ax,width)
             width_dict[ax] = width / total_width * (x1 - x0)
-            print("width_dict[ax]")   ##will return width per image as percentage of total figure width. I would only need the width from 0/2 and 1 to divide figure
-            print(width_dict[ax])
-
-
-        ##same for height
 
         total_height = float(sum(unique_height_dict.values()))
-        print("total_height")
-        print(total_height)  #I assume widht of all 3 figures combined????
-        ##How do I figure out which axes I am in?????  (idx further down seems to do it)
+
         for ax, height in height_dict.items():
             height_dict[ax] = height / total_height * (y1 - y0)
-            print("heigth_dict[ax]")   ##will return heigth per image as percentage of total figure width. I would only need the width from 0/2 and 1 to divide figure
-            print(height_dict[ax])
-
-
-        print("NOWWW....")
-        print(height_dict.values())
-        print(width_dict.values())
 
         direction_ax = []
         for d in self._cut_displayed:
             direction_ax.append(display_ax_dict.get(d, dummy_ax).ax)
 
-        ##Maybe make 4 completely  new dictionaries, one per coordinate??
-        
         coord1_dict = dict()
         coord2_dict = dict()
         coord3_dict = dict()
         coord4_dict = dict()
 
-        #for idx, ax in enumerate(direction_ax):
-
-            #if (idx == 0):
-            #    coord1_dict[ax] = x0
-            #    coord2_dict[ax] = (y1-y0) - height_dict[ax]
-            #    coord3_dict[ax] = x0 + width_dict[ax]
-            #    coord4_dict[ax] = y1
-
-            #if (idx == 1):
-            #    coord1_dict[ax] = (x1-x0) - width_dict[ax]
-            #    coord2_dict[ax] = (y1-y0) - height_dict[ax]
-            #    coord3_dict[ax] = x1
-            #    coord4_dict[ax] = y1
-
-            #if (idx == 2):
-            #    coord1_dict[ax] = x0
-            #    coord2_dict[ax] = y0
-            #    coord3_dict[ax] = x0 + width_dict[ax]
-            #    coord4_dict[ax] = y0 + height_dict[ax]
-
-        print(self.axes)
-
-        #if 'y' in self.axes:
-        #    ax = self.axes['y'].ax
-        #    print(ax)
-        #    coord1_dict[ax] = x0
-        #    coord2_dict[ax] = (y1-y0) - height_dict[ax]
-        #    coord3_dict[ax] = x0 + width_dict[ax]
-        #    coord4_dict[ax] = y1
-
-        #if 'x' in self.axes:
-        #    ax = self.axes['x'].ax
-        #    print(ax)
-        #    coord1_dict[ax] = (x1-x0) - width_dict[ax]
-        #    coord2_dict[ax] = (y1-y0) - height_dict[ax]
-        #    coord3_dict[ax] = x1
-        #    coord4_dict[ax] = y1
-
-        #if 'z' in self.axes:
-        #    ax = self.axes['z'].ax
-        #    print(ax)
-        #    coord1_dict[ax] = x0
-        #    coord2_dict[ax] = y0
-        #    coord3_dict[ax] = x0 + width_dict[ax]
-        #    coord4_dict[ax] = y0 + height_dict[ax]
-
         if 'y' in self.axes:
             ax = self.axes['y'].ax
-            print(ax)
             coord1_dict[ax] = x0
             coord2_dict[ax] = (y1) - height_dict[ax]
             coord3_dict[ax] = x0 + width_dict[ax]
@@ -1307,7 +1200,6 @@ class OrthoSlicer2(BaseSlicer):
 
         if 'x' in self.axes:
             ax = self.axes['x'].ax
-            print(ax)
             coord1_dict[ax] = (x1) - width_dict[ax]
             coord2_dict[ax] = (y1) - height_dict[ax]
             coord3_dict[ax] = x1
@@ -1315,42 +1207,10 @@ class OrthoSlicer2(BaseSlicer):
 
         if 'z' in self.axes:
             ax = self.axes['z'].ax
-            print(ax)
             coord1_dict[ax] = x0
             coord2_dict[ax] = y0
             coord3_dict[ax] = x0 + width_dict[ax]
             coord4_dict[ax] = y0 + height_dict[ax]
-
-
-        #for idx, ax in enumerate(direction_ax):
-        #    print("index pretty please???")
-        #    print(idx)
-        #    left_dict[ax] = x0
-        #    for prev_ax in direction_ax[:idx]:
-        #        left_dict[ax] += width_dict[prev_ax]   #To find coordinates, add per axes the width to 
-        #print("returns")
-        #print(left_dict[axes])
-        #print(width_dict[axes])
-
-        ##For 2x2 view, I would need only one point to identify the widht and one point for the height. Width division would be defined by images 0/2 and 1, and 
-        ## height would be defined by images 0/1 and 2. So find the ratio between those iamges and use as coordinate point.
-
-        #if (left_dict[axes] > 0.6):
-        #    left_dict[axes] = 0.0
-        #    y0 = 0.6
-        #    width_dict[axes] = 0.313666
-        #    y1 = 1.0
-        #print(axes)  # Axes(0.683389,0.316611;0.316611x0.366778)
-        #print(renderer) #<nilearn.plotting.displays.OrthoSlicer object at 0x0000022E1FDB30B8>
-        #print(self) # <nilearn.plotting.displays.OrthoSlicer object at 0x0000022E1FDB30B8>
-        # Bbox(x0=0.0, y0=0.0, x1=0.3166109253065775, y1=1.0)
-        #print(transforms.Bbox([[left_dict[axes], y0],      
-        #                       [left_dict[axes] + width_dict[axes], y1]]))
-        #return transforms.Bbox([[left_dict[axes], y0],
-        #                       [left_dict[axes] + width_dict[axes], y1]])
-        print("Bounding Boxes per figure")
-        print(transforms.Bbox([[coord1_dict[axes], coord2_dict[axes]],
-                               [coord3_dict[axes],coord4_dict[axes]]]))
 
         return transforms.Bbox([[coord1_dict[axes], coord2_dict[axes]],
                                [coord3_dict[axes],coord4_dict[axes]]])
