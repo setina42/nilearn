@@ -1208,7 +1208,8 @@ class OrthoSlicer(BaseSlicer):
 ###############################################################################
 
 class TiledSlicer(BaseSlicer):
-    """ ##Aim organize into same view as MRicroGL
+    """ A class to create 3 axes for plotting orthogonal
+    cuts of 3D maps, organized in a 2x2 grid.
 
     Attributes
     ----------
