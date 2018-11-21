@@ -1030,7 +1030,6 @@ class BaseSlicer(object):
                                        edgecolor=edgecolor)
 
 
-
 ###############################################################################
 # class OrthoSlicer
 ###############################################################################
@@ -1438,9 +1437,6 @@ class TiledSlicer(BaseSlicer):
                 ax.axvline(x,  **kwargs)
             if y is not None:
                 ax.axhline(y, **kwargs)
-
-
-
 
 ###############################################################################
 # class BaseStackedSlicer
